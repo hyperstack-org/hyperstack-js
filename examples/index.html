@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Hyperstack-JS Demo</title>
+
+    <!-- React and JQuery -->
+    <script crossorigin src="https://unpkg.com/react@16.8.6/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16.8.6/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/create-react-class@15.6.3/create-react-class.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-router@4.3.1/umd/react-router.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-router-dom@4.3.1/umd/react-router-dom.min.js"></script>
+    <script crossorigin src="https://unpkg.com/history@4.10.1/umd/history.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react_ujs@2.6.0/react_ujs/dist/react_ujs.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <!-- Opal (or bring your own) -->
+    <script src="dist/opal.js"></script>
+
+    <!--Hyperstack -->
+    <script src="dist/hyperstack.js"></script>
+    <script src="dist/hyper-router.js"></script>
+    <script src="dist/hyperstack-compiler.js"></script>
+
+    <!-- Bootstrap for this example -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <script type="text/ruby">
+      class TopLevelComponent
+        include Hyperstack::Component
+
+        render(DIV) do
+          DIV(class: 'container') do
+            H1 { "Components, Stores and Operations" }
+            P { "A few examples using Hyperstack Components which wrap React, Stores to hold state which is shared between Components and an Operation for mutating the Store's state. Finally, a Clock which demonstrates local state and a callback which triggers every second." }
+            TypeAlong()
+            Buttons()
+            Clock()
+            StylishTable()
+            TheRouter()
+          end
+        end
+      end
+
+      class Buttons
+        include Hyperstack::Component
+
+        render(DIV) do
+          H2 { "Some buttons" }
+
+          BUTTON(class: 'btn btn-primary') { 'See the value' }
+            .on(:click) { alert "MyStore value is '#{MyStore.value}'" }
+          BUTTON(class: 'btn btn-link') { 'Clear' }
+            .on(:click) { ClearOp.run }
+        end
+      end
+
+      class TypeAlong
+        include Hyperstack::Component
+
+        render(DIV) do
+          H2 { "MyStore value is '#{MyStore.value}'" }
+
+          INPUT(type: :text, value: MyStore.value )
+            .on(:change) { |e| MyStore.value = e.target.value }
+        end
+      end
+
+      class Clock
+        include Hyperstack::Component
+        include Hyperstack::State::Observable
+
+        param format: '%a, %e %b %Y %H:%M:%S'
+
+        before_mount do
+          @time = Time.now.strftime(@Format)
+
+          every(1) do
+            mutate { @time = Time.now.strftime(@Format) }
+          end
+        end
+
+        render(DIV) do
+          H2 { "And a clock" }
+
+          SPAN { "The time is #{@time}" }
+        end
+      end
+
+      class MyStore
+        include Hyperstack::State::Observable
+
+        class << self
+          state_accessor :value
+
+          mutator :clear do
+            @value = ''
+          end
+        end
+      end
+
+      class ClearOp < Hyperstack::Operation
+        step { puts "about to clear everything" }
+        step { MyStore.clear }
+      end
+
+      class StylishTable
+        include Hyperstack::Component
+
+        render(DIV) do
+          H2 { "A stylish table" }
+
+          TABLE(class: 'table table-bordered') do
+            THEAD do
+              TR do
+                TH { "First Name" }
+                TH { "Last Name" }
+                TH { "Username" }
+              end
+            end
+
+            TBODY do
+              TR do
+                TD { "Mark" }
+                TD { "Otto" }
+                TD(class: 'text-success') { MyStore.value }
+              end
+            end
+          end
+        end
+      end
+
+      class TheRouter
+        include Hyperstack::Component
+        include Hyperstack::Router
+        include Hyperstack::Router::Helpers
+
+        LINKS = %w[foo bar baz].freeze
+
+        history :hash
+
+        def active?(link)
+          location.pathname == "/#{link}" ? 'active' : ''
+        end
+
+        render(DIV) do
+          UL(class: "nav nav-tabs") do
+            LINKS.each do |link|
+              LI(role: "presentation", class: active?(link)) do
+                Link("/#{link}") { link.capitalize }
+              end
+            end
+          end
+
+          DIV(class: 'tab-content') do
+            Switch do
+              LINKS.each do |link|
+                Route("/#{link}") do
+
+                  DIV(class: "tab-pane active") do
+                    H4 { "#{link.capitalize} here!" }
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    </script>
+
+  </head>
+
+  <body>
+    <div data-hyperstack-mount="TopLevelComponent"></div>
+  </body>
+</html>
