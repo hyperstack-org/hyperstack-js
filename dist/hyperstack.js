@@ -27306,6 +27306,8 @@ if (data == null) data = nil;
         if (self.initialized == null) self.initialized = nil;
 
         
+        if (Opal.const_get_relative($nesting, 'Hyperstack').$env()['$==']("express")) {
+          return nil};
         if ($truthy(self.initialized)) {
           
           if ($truthy(($truthy($a = self['$on_opal_client?']()) ? Opal.const_get_relative($nesting, 'Hyperstack').$action_cable_consumer() : $a))) {
