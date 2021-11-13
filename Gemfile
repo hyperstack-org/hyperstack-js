@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 # TODO: change branch back to edge once the changes are merged
-git 'https://github.com/hyperstack-org/hyperstack', branch: 'hyperstack-js', glob: 'ruby/*/*.gemspec' do
+git 'https://github.com/hyperstack-org/hyperstack', branch: 'edge', glob: 'ruby/*/*.gemspec' do
   gem 'rails-hyperstack'
 end
 
