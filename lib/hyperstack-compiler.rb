@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
+require 'corelib/string/unpack'
 require 'opal/compiler'
+
+`window.HyperstackOpts = {'transport': 'none'}`
 
 Document.ready? do
   # rubocop:disable Lint/RescueException
