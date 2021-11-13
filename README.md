@@ -1,6 +1,6 @@
 #  Hyperstack
 
-This fork fix Gemfile, and hyperstack-compiler in order to get latest hyperstack (1.0.alpha1.8) and opal (1.3.2)
+This fork fix Gemfile, and hyperstack-compiler in order to get latest hyperstack (1.0.alpha1.8) and opal (1.3.2) working
 
 ### Hyperstack.js
 
